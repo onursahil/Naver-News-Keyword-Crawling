@@ -89,7 +89,7 @@ def initDriver():
     options.add_argument('--disable-dev-shm-usage')
     global driver
     if not driver:
-        driver = webdriver.Chrome("/Users/onursahil/PycharmProjects/keyword_timerange_crawling/chromedriver", chrome_options=options)
+        driver = webdriver.Chrome("/Users/onursahil/Documents/Developer/Naver-News-Keyword-Crawling/chromedriver", chrome_options=options)
     createURL()
 
 if __name__ == '__main__':
