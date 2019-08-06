@@ -18,11 +18,11 @@ def crawlNewsContent(pre_url):
 
         driver.get(query_url)
 
-        # Naver news links xpath
+        # NAVER NEWS LINKS XPATH
         naver_xpath_one = "//ul[@class='type01']/li/dl/dd/a"
         naver_xpath_two = "//ul[@class='type01']/li/dl/dd//ul/li/span/a"
 
-        # Collect Naver news links from each news section
+        # COLLECT NEWS LINKS ON THE CURRENT PAGE
         news_blocks_one = driver.find_elements_by_xpath(naver_xpath_one)
         news_blocks_two = driver.find_elements_by_xpath(naver_xpath_two)
 
@@ -31,12 +31,22 @@ def crawlNewsContent(pre_url):
         for doc in news_blocks:
             link_list.append(doc.get_attribute("href"))
 
-        # Get news data for each naver news link
+        # THROW FOR LOOP FOR EACH NEWS LINK
         for element in link_list:
             news_content = {}
             driver.get(element)
             driver.implicitly_wait(1)
 
+            # EXTRACT PUBLISH DATE
+            publish_date = driver.find_element_by_xpath("//span[@class='t11']").text
+            if '. 오후' in publish_date:
+                publish_date = publish_date.replace(". 오후", "")
+            else:
+                publish_date = publish_date.replace(". 오전", "")
+
+            news_content["published_date"] = datetime.datetime.strptime(publish_date, "%Y.%m.%d %I:%M")
+
+            # EXTRACT NEWS CONTENT
             content_xpath = "//div[@id='articleBodyContents']"
             news_content["news"] = driver.find_element_by_xpath(content_xpath).text
 
@@ -50,7 +60,7 @@ def default(o):
     if isinstance(o, (datetime.date, datetime.datetime)):
         return o.isoformat()
 
-# Adjust the url string to search 10 years of news for the particular keyword
+# ADJUST THE TIME RANGE FOR 10 YEARS
 def adjustDate():
     today_date = datetime.datetime.now()
     today = today_date.strftime("%Y-%m-%d")
@@ -64,7 +74,7 @@ def adjustDate():
 
     return today, ten_years_back, today_straight, ten_year_back_straight
 
-# Get the keyword to search and create basic url string
+# GET THE KEYWORD TO SEARCH FOR
 def createURL():
     URL = "https://search.naver.com/search.naver?&where=news&query="
     keyword = '반도체'
@@ -81,7 +91,7 @@ def createURL():
     crawlNewsContent(pre_url)
     print(datetime.datetime.now().time())
 
-# Initialize chrome driver
+# INITIALIZE CHROMEDRIVER
 def initDriver():
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
