@@ -62,7 +62,7 @@ def crawlNewsContent(pre_url, today, today_straight, ten_year_back, ten_year_bac
                 time.sleep(random.randint(1, 3))
 
                 last_date = publish_date
-                print(last_date)
+                # print(last_date)
 
         except NoSuchElementException:
             continue
@@ -78,7 +78,7 @@ def reCreateURL(date_only, pre_url, today, today_straight, ten_year_back, ten_ye
     # keyword = input("검색어를 입력해주세요: ")
     # keyword = keyword.join('""')
     query_url = URL + keyword
-    print(query_url)
+    # print(query_url)
     pre_url = query_url + "&sm=tab_pge&sort=1&photo=0&field=0&reporter_article=&pd=3&ds="
 
     # today, ten_year_back, today_straight, ten_year_back_straight = adjustDate()
@@ -86,9 +86,9 @@ def reCreateURL(date_only, pre_url, today, today_straight, ten_year_back, ten_ye
     date_only_straight = date_only.replace(".", "")
 
     pre_url += ten_year_back + '&de=' + date_only + '&docid=&nso=so:r,p:from' + ten_year_back_straight + 'to' + date_only_straight + ',a:all&mynews=0&start='
-    print(datetime.datetime.now().time())
+    # print(datetime.datetime.now().time())
     crawlNewsContent(pre_url, today, today_straight, ten_year_back, ten_year_back_straight)
-    print(datetime.datetime.now().time())
+    # print(datetime.datetime.now().time())
 
 
 def default(o):
@@ -118,15 +118,15 @@ def createURL():
     # keyword = input("검색어를 입력해주세요: ")
     # keyword = keyword.join('""')
     query_url = URL + keyword
-    print(query_url)
+    # print(query_url)
     pre_url = query_url + "&sm=tab_pge&sort=1&photo=0&field=0&reporter_article=&pd=3&ds="
 
     today, ten_year_back, today_straight, ten_year_back_straight = adjustDate()
 
     pre_url += ten_year_back + '&de=' + today + '&docid=&nso=so:r,p:from' + ten_year_back_straight + 'to' + today_straight + ',a:all&mynews=0&start='
-    print(datetime.datetime.now().time())
+    # print(datetime.datetime.now().time())
     crawlNewsContent(pre_url, today, today_straight, ten_year_back, ten_year_back_straight)
-    print(datetime.datetime.now().time())
+    # print(datetime.datetime.now().time())
 
 
 # INITIALIZE CHROMEDRIVER
