@@ -10,7 +10,7 @@ import random
 
 driver = None
 
-def crawlNewsContent(pre_url):
+def crawlNewsContent(pre_url, today, today_straight, ten_year_back, ten_year_back_straight):
     for i in range(1, 4000, 10):
         link_list = []
         query_url = pre_url + str(i)
@@ -19,19 +19,20 @@ def crawlNewsContent(pre_url):
         driver.get(query_url)
 
         # NAVER NEWS LINKS XPATH
-        naver_xpath_one = "//ul[@class='type01']/li/dl/dd/a"
-        naver_xpath_two = "//ul[@class='type01']/li/dl/dd//ul/li/span/a"
-
-        # COLLECT NEWS LINKS ON THE CURRENT PAGE
-        news_blocks_one = driver.find_elements_by_xpath(naver_xpath_one)
-        news_blocks_two = driver.find_elements_by_xpath(naver_xpath_two)
-
-        news_blocks = news_blocks_one + news_blocks_two
-
-        for doc in news_blocks:
-            link_list.append(doc.get_attribute("href"))
-
         try:
+            naver_xpath_one = "//ul[@class='type01']/li/dl/dd/a"
+            naver_xpath_two = "//ul[@class='type01']/li/dl/dd//ul/li/span/a"
+
+
+            # COLLECT NEWS LINKS ON THE CURRENT PAGE
+            news_blocks_one = driver.find_elements_by_xpath(naver_xpath_one)
+            news_blocks_two = driver.find_elements_by_xpath(naver_xpath_two)
+
+            news_blocks = news_blocks_one + news_blocks_two
+
+            for doc in news_blocks:
+                link_list.append(doc.get_attribute("href"))
+
             # THROW FOR LOOP FOR EACH NEWS LINK
             for element in link_list:
                 news_content = {}
@@ -39,11 +40,14 @@ def crawlNewsContent(pre_url):
                 driver.implicitly_wait(1)
 
                 # EXTRACT PUBLISH DATE
-                publish_date = driver.find_element_by_xpath("//span[@class='t11']").text
-                if '. 오후' in publish_date:
-                    publish_date = publish_date.replace(". 오후", "")
-                else:
-                    publish_date = publish_date.replace(". 오전", "")
+                try:
+                    publish_date = driver.find_element_by_xpath("//span[@class='t11']").text
+                    if '. 오후' in publish_date:
+                        publish_date = publish_date.replace(". 오후", "")
+                    else:
+                        publish_date = publish_date.replace(". 오전", "")
+                except NoSuchElementException:
+                    continue
 
                 news_content["published_date"] = datetime.datetime.strptime(publish_date, "%Y.%m.%d %I:%M")
 
@@ -56,9 +60,35 @@ def crawlNewsContent(pre_url):
                 time.sleep(random.randint(1, 3))
                 driver.back()
                 time.sleep(random.randint(1, 3))
-        except NoSuchElementException as e:
-            last_date = publish_date
-            print(last_date)
+
+                last_date = publish_date
+                print(last_date)
+
+        except NoSuchElementException:
+            continue
+
+    date_only = last_date.split(" ")
+
+    if date_only[0] != ten_year_back:
+        reCreateURL(date_only[0], pre_url, today, today_straight, ten_year_back, ten_year_back_straight)
+
+def reCreateURL(date_only, pre_url, today, today_straight, ten_year_back, ten_year_back_straight):
+    URL = "https://search.naver.com/search.naver?&where=news&query="
+    keyword = '반도체'
+    # keyword = input("검색어를 입력해주세요: ")
+    # keyword = keyword.join('""')
+    query_url = URL + keyword
+    print(query_url)
+    pre_url = query_url + "&sm=tab_pge&sort=1&photo=0&field=0&reporter_article=&pd=3&ds="
+
+    # today, ten_year_back, today_straight, ten_year_back_straight = adjustDate()
+
+    date_only_straight = date_only.replace(".", "")
+
+    pre_url += ten_year_back + '&de=' + date_only + '&docid=&nso=so:r,p:from' + ten_year_back_straight + 'to' + date_only_straight + ',a:all&mynews=0&start='
+    print(datetime.datetime.now().time())
+    crawlNewsContent(pre_url, today, today_straight, ten_year_back, ten_year_back_straight)
+    print(datetime.datetime.now().time())
 
 
 def default(o):
@@ -89,13 +119,13 @@ def createURL():
     # keyword = keyword.join('""')
     query_url = URL + keyword
     print(query_url)
-    pre_url = query_url + "&sm=tab_pge&sort=0&photo=0&field=0&reporter_article=&pd=3&ds="
+    pre_url = query_url + "&sm=tab_pge&sort=1&photo=0&field=0&reporter_article=&pd=3&ds="
 
     today, ten_year_back, today_straight, ten_year_back_straight = adjustDate()
 
     pre_url += ten_year_back + '&de=' + today + '&docid=&nso=so:r,p:from' + ten_year_back_straight + 'to' + today_straight + ',a:all&mynews=0&start='
     print(datetime.datetime.now().time())
-    crawlNewsContent(pre_url)
+    crawlNewsContent(pre_url, today, today_straight, ten_year_back, ten_year_back_straight)
     print(datetime.datetime.now().time())
 
 
