@@ -70,9 +70,9 @@ def crawlNewsContent(pre_url, today, today_straight, ten_year_back, ten_year_bac
     date_only = last_date.split(" ")
 
     if date_only[0] != ten_year_back:
-        reCreateURL(date_only[0], pre_url, today, today_straight, ten_year_back, ten_year_back_straight)
+        reCreateURL(date_only[0], today, today_straight, ten_year_back, ten_year_back_straight)
 
-def reCreateURL(date_only, pre_url, today, today_straight, ten_year_back, ten_year_back_straight):
+def reCreateURL(date_only, today, today_straight, ten_year_back, ten_year_back_straight):
     URL = "https://search.naver.com/search.naver?&where=news&query="
     keyword = '반도체'
     # keyword = input("검색어를 입력해주세요: ")
